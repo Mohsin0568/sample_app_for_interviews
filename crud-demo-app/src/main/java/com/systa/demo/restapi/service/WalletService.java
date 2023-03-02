@@ -46,11 +46,28 @@ public class WalletService {
 		
 		Optional<Wallet> wallet = walletRepository.findById(id);
 		
-		if(wallet.isEmpty()) {
-			// should throw exception with non content status code
+		if(wallet.isPresent()) 
+			return wallet.get();
+		else {
+			// should throw an exception, where the response status should be not found
+			return null;
 		}
+	}
+	
+	public Wallet updateWalletById(Wallet wallet, long id) {
 		
-		return wallet.get();
+		Optional<Wallet> optionalWallet = walletRepository.findById(id);
+		if(optionalWallet.isPresent()) {
+			Wallet walletInDb = optionalWallet.get();
+			walletInDb.setStatus("inactive");
+			walletInDb.setTransferLimit(0);
+			walletInDb.setWalletLimit(0);
+			return walletRepository.save(walletInDb);
+		}
+		else {
+			// should throw an exception, where the response status should be not found
+			return null;
+		}
 		
 	}
 	

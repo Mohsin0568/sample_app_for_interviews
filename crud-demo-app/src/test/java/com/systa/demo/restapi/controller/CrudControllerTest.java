@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,6 +91,33 @@ class CrudControllerTest {
 		assertEquals(1000, response.getWalletLimit());
 		assertEquals(100, response.getTransferLimit());
 		assertEquals("active", response.getStatus());
+		
+	}
+	
+	@Test
+    @DisplayName("PUT - update wallet")
+	void updateWalletByIdTest() throws Exception {
+		
+		Wallet wallet = walletRepository.save(getOneWallet());
+		
+		Wallet walletToBeUpdated = getOneWallet();
+		walletToBeUpdated.setStatus("inactive");
+		walletToBeUpdated.setTransferLimit(0);
+		walletToBeUpdated.setWalletLimit(0);
+		
+		mockMvc.perform(put("/v1/wallet/"+wallet.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJsonString(wallet))) // asJsonString is predefined function which is defined below
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.transferLimit", is(0)))
+				.andReturn();
+
+		Optional<Wallet> optionalWallet = walletRepository.findById(wallet.getId());
+		
+		assertTrue(optionalWallet.isPresent());
+		assertEquals(0, optionalWallet.get().getTransferLimit());
+		assertEquals(0, optionalWallet.get().getWalletLimit());
+		assertEquals("inactive", optionalWallet.get().getStatus());
 		
 	}
 	

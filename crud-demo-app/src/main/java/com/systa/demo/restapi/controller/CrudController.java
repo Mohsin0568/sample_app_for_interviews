@@ -66,13 +66,14 @@ public class CrudController {
 	public ResponseEntity<Wallet> getWalletById(@PathVariable("id") Long id){
 		
 		return ResponseEntity.ok().body(walletService.getWalletById(id));
+		
 	}
 	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<Wallet> updateWalletById(@PathVariable("id") long id, 
 				@RequestBody @Valid Wallet wallet){
 		
-		return null;
+		return ResponseEntity.ok().body(walletService.updateWalletById(wallet, id));
 	}
 	
 	@DeleteMapping(value = "/{id}")
